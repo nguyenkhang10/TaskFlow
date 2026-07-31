@@ -11,7 +11,9 @@ import com.example.taskflow.service.ProjectService;
 
 import java.util.List;
 
-public class ProjectServiceImpl extends ProjectService {
+@Service
+public class ProjectServiceImpl implements ProjectService {
+
     private final ProjectMapper projectMapper;
 
     public ProjectServiceImpl(ProjectMapper projectMapper) {

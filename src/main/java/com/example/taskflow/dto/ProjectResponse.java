@@ -1,7 +1,7 @@
 package com.example.taskflow.dto;
 
-import com.example.domain.Project;
-import com.example.domain.ProjectStatus;
+import com.example.taskflow.domain.Project;
+import com.example.taskflow.domain.ProjectStatus;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -13,28 +13,29 @@ import java.time.OffsetDateTime;
  * Không nhận {@code id}, {@code createdAt}, {@code updatedAt} từ client — những
  * field đó do hệ thống/DB quản lý.
 */
-public class ProjectResponse (
-    Long id,
-    String name,
-    String description,
-    ProjectStatus status,
-    String owner,
-    LocalDate startDate,
-    LocalDate dueDate,
-    OffsetDateTime createdAt,
-    OffsetDateTime updatedAt
+public record ProjectResponse(
+        Long id,
+        String name,
+        String description,
+        ProjectStatus status,
+        String owner,
+        LocalDate startDate,
+        LocalDate dueDate,
+        OffsetDateTime createdAt,
+        OffsetDateTime updatedAt
 ) {
-        public static ProjectResponse from(Project p) {
-            return new ProjectResponse(
-                    p.getId(),
-                    p.getName(),
-                    p.getDescription(),
-                    p.getStatus(),
-                    p.getOwner(),
-                    p.getStartDate(),
-                    p.getDueDate(),
-                    p.getCreatedAt(),
-                    p.getUpdatedAt()
-            );
-        }
+    /** Chuyển domain model → DTO output. */
+    public static ProjectResponse from(Project p) {
+        return new ProjectResponse(
+                p.getId(),
+                p.getName(),
+                p.getDescription(),
+                p.getStatus(),
+                p.getOwner(),
+                p.getStartDate(),
+                p.getDueDate(),
+                p.getCreatedAt(),
+                p.getUpdatedAt()
+        );
+    }
 }

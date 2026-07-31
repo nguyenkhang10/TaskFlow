@@ -1,6 +1,6 @@
 package com.example.taskflow.domain;
 
-public class ProjectStatus {
+public enum ProjectStatus {
     PLANNING,
     ACTIVE,
     ON_HOLD,

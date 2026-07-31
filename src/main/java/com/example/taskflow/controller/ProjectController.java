@@ -43,7 +43,7 @@ public class ProjectController {
      */
     @GetMapping
     public List<ProjectResponse> search(@RequestParam(required = false) ProjectStatus status,
-                                        @RequestParam(required = false) String keyword) {
+                                        @RequestParam(value = "keyword", required = false) String keyword) {
         return projectService.search(status, keyword);
     }
 

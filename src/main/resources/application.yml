@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: taskflow
+
+  # --- Kết nối PostgreSQL ---
+  # Có thể override bằng biến môi trường khi chạy Docker/CI.
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/admin}
+    username: ${DB_USERNAME:admin}
+    password: ${DB_PASSWORD:admin}
+    Hikari:
+      pool-name: project-pool
+      maximum-pool-size: 10          # HikariCP: giới hạn số connection
+
+  # --- Flyway: chạy migration trong resources/db/migration lúc khởi động ---
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+# --- MyBatis ---
+mybatis:
+  # Cho phép "Project" thay vì FQN trong resultType/parameterType
+  type-aliases-package: com.example.taskflow.domain
+  # Vị trí các file XML mapper
+  mapper-locations: classpath:mapper/**/*.xml
+  configuration:
+    # Tự map user_name (DB) -> userName (Java) mà không cần khai báo tay
+    map-underscore-to-camel-case: true
+
+server:
+  port: 8080
+
+# --- Logging: in ra câu SQL MyBatis thực thi — rất hữu ích khi dạy/debug ---
+logging:
+  level:
+    com.example.taskflow.mapper: debug
