@@ -1,0 +1,20 @@
+package com.example.taskflow.service;
+
+import com.example.taskflow.domain.TaskPriority;
+import com.example.taskflow.domain.TaskStatus;
+import com.example.taskflow.dto.TaskRequest;
+import com.example.taskflow.dto.TaskResponse;
+
+import java.util.List;
+
+public interface TaskService {
+    TaskResponse create(Long projectId, TaskRequest request);
+
+    TaskResponse getById(Long id);
+
+    List<TaskResponse> search(TaskStatus status, TaskPriority priority, Long projectId, String keyword);
+
+    TaskResponse update(Long id, TaskRequest request);
+
+    void delete(Long id);
+}
