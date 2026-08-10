@@ -12,6 +12,8 @@ public class Task {
     private TaskStatus status;
     private TaskPriority priority;
     private String assignee;
+    private Long creatorId;
+    private Long handlerId;
     private LocalDate dueDate;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
@@ -31,8 +33,17 @@ public class Task {
     public TaskStatus getStatus() { return status; }
     public void setStatus(TaskStatus status) { this.status = status; }
 
+    public TaskPriority getPriority() { return priority; }
+    public void setPriority(TaskPriority priority) { this.priority = priority; }
+
     public String getAssignee() { return assignee; }
     public void setAssignee(String assignee) { this.assignee = assignee; }
+
+    public Long getCreatorId() { return creatorId; }
+    public void setCreatorId(Long creatorId) { this.creatorId = creatorId; }
+
+    public Long getHandlerId() { return handlerId; }
+    public void setHandlerId(Long handlerId) { this.handlerId = handlerId; }
 
     public LocalDate getDueDate() { return dueDate; }
     public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }
@@ -42,7 +53,4 @@ public class Task {
 
     public OffsetDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(OffsetDateTime updatedAt) { this.updatedAt = updatedAt; }
-
-    public TaskPriority getPriority() { return priority; }
-    public void setPriority(TaskPriority priority) { this.priority = priority; }
 }

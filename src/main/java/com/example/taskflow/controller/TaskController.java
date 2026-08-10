@@ -14,7 +14,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
-
+/**
+ * Tầng Controller: điểm vào của mọi HTTP request cho tài nguyên "task".
+ */
 @RestController
 @RequestMapping("/api")
 public class TaskController {
@@ -43,19 +45,39 @@ public class TaskController {
 
         return ResponseEntity.created(location).body(created);
     }
-    
+
     /**
-     * GET /api/tasks — Lấy danh sách task, hỗ trợ lọc theo status, priority, projectId, và keyword.
-     * Ví dụ: /api/tasks?status=IN_PROGRESS&priority=HIGH&projectId=1&keyword=feature
+     * POST /api/tasks — Tạo 1 task mới (projectId được chỉ định trong body).
+     */
+    @PostMapping("/tasks")
+    public ResponseEntity<TaskResponse> createDirect(
+            @Valid @RequestBody TaskRequest request,
+            UriComponentsBuilder uriBuilder) {
+
+        TaskResponse created = taskService.create(request.projectId(), request);
+
+        URI location = uriBuilder
+                .path("/api/tasks/{id}")
+                .buildAndExpand(created.id())
+                .toUri();
+
+        return ResponseEntity.created(location).body(created);
+    }
+
+    /**
+     * GET /api/tasks — Lấy danh sách task, hỗ trợ lọc theo status, priority, projectId, creatorId, handlerId, và keyword.
+     * Ví dụ: /api/tasks?status=IN_PROGRESS&priority=HIGH&projectId=1&creatorId=2&handlerId=3&keyword=feature
      */
     @GetMapping("/tasks")
     public List<TaskResponse> search(
             @RequestParam(required = false) TaskStatus status,
             @RequestParam(required = false) TaskPriority priority,
             @RequestParam(required = false) Long projectId,
+            @RequestParam(required = false) Long creatorId,
+            @RequestParam(required = false) Long handlerId,
             @RequestParam(required = false) String keyword) {
 
-        return taskService.search(status, priority, projectId, keyword);
+        return taskService.search(status, priority, projectId, creatorId, handlerId, keyword);
     }
 
     /** GET /api/tasks/{id} — Lấy chi tiết 1 task. Trả về 404 nếu không tìm thấy. */

@@ -12,18 +12,20 @@
         <result property="status"      column="status"/>
         <result property="priority"    column="priority"/>
         <result property="assignee"    column="assignee"/>
+        <result property="creatorId"   column="creator_id"/>
+        <result property="handlerId"   column="handler_id"/>
         <result property="dueDate"     column="due_date"/>
         <result property="createdAt"   column="created_at"/>
         <result property="updatedAt"   column="updated_at"/>
     </resultMap>
 
     <sql id="columns">
-        id, project_id, title, description, status, priority, assignee, due_date, created_at, updated_at
+        id, project_id, title, description, status, priority, assignee, creator_id, handler_id, due_date, created_at, updated_at
     </sql>
 
     <insert id="insert" parameterType="Task" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO task (project_id, title, description, status, priority, assignee, due_date)
-        VALUES (#{projectId}, #{title}, #{description}, #{status}, #{priority}, #{assignee}, #{dueDate})
+        INSERT INTO task (project_id, title, description, status, priority, assignee, creator_id, handler_id, due_date)
+        VALUES (#{projectId}, #{title}, #{description}, #{status}, #{priority}, #{assignee}, #{creatorId}, #{handlerId}, #{dueDate})
     </insert>
 
     <select id="findById" resultMap="TaskResult">
@@ -45,6 +47,12 @@
             <if test="projectId != null">
                 AND project_id = #{projectId}
             </if>
+            <if test="creatorId != null">
+                AND creator_id = #{creatorId}
+            </if>
+            <if test="handlerId != null">
+                AND handler_id = #{handlerId}
+            </if>
             <if test="keyword != null and keyword != ''">
                 AND (title ILIKE '%' || #{keyword} || '%'
                 OR description ILIKE '%' || #{keyword} || '%')
@@ -60,6 +68,8 @@
             status      = #{status},
             priority    = #{priority},
             assignee    = #{assignee},
+            creator_id  = #{creatorId},
+            handler_id  = #{handlerId},
             due_date    = #{dueDate},
             updated_at  = now()
         WHERE id = #{id}

@@ -18,6 +18,8 @@ public interface TaskMapper {
     List<Task> search(@Param("status") TaskStatus status,
                       @Param("priority") TaskPriority priority,
                       @Param("projectId") Long projectId,
+                      @Param("creatorId") Long creatorId,
+                      @Param("handlerId") Long handlerId,
                       @Param("keyword") String keyword);
 
     int update(Task task);
