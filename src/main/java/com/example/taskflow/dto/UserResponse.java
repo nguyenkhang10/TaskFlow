@@ -8,6 +8,7 @@ public record UserResponse(
         Long id,
         String username,
         String email,
+        String fullName,
         OffsetDateTime createdAt,
         OffsetDateTime updatedAt
 ) {
@@ -16,6 +17,7 @@ public record UserResponse(
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
+                user.getFullName(),
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );

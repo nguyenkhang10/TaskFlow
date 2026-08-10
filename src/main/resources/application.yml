@@ -34,3 +34,11 @@ server:
 logging:
   level:
     com.example.taskflow.mapper: debug
+
+# --- JWT ---
+jwt:
+  # Secret key để ký JWT — PHẢI >= 32 ký tự (256-bit cho HS256)
+  # Trong production: đặt vào biến môi trường JWT_SECRET, không commit lên Git!
+  secret: ${JWT_SECRET:taskflow-super-secret-key-for-jwt-signing-2024}
+  # Token hết hạn sau 24 giờ (mili-giây)
+  expiration-ms: 86400000

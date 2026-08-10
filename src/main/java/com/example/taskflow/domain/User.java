@@ -9,6 +9,8 @@ public class User {
     private String fullName;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+    private String passwordHash;   // BCrypt hash, KHÔNG bao giờ trả về client
+
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -27,4 +29,9 @@ public class User {
 
     public OffsetDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(OffsetDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public String getPasswordHash() { return passwordHash; }
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+
+
 }

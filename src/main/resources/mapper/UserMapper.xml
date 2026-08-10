@@ -5,16 +5,17 @@
 <mapper namespace="com.example.taskflow.mapper.UserMapper">
 
     <resultMap id="UserResult" type="User">
-        <id     property="id"        column="id"/>
-        <result property="username"  column="username"/>
-        <result property="email"     column="email"/>
-        <result property="fullName"  column="full_name"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
+        <id     property="id"           column="id"/>
+        <result property="username"     column="username"/>
+        <result property="email"        column="email"/>
+        <result property="fullName"     column="full_name"/>
+        <result property="passwordHash" column="password_hash"/>  <!-- BCrypt hash -->
+        <result property="createdAt"    column="created_at"/>
+        <result property="updatedAt"    column="updated_at"/>
     </resultMap>
 
     <sql id="columns">
-        id, username, email, full_name, created_at, updated_at
+        id, username, email, full_name, password_hash, created_at, updated_at
     </sql>
 
     <insert id="insert" parameterType="User" useGeneratedKeys="true" keyProperty="id">
