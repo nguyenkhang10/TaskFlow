@@ -19,8 +19,8 @@
     </sql>
 
     <insert id="insert" parameterType="User" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO app_user (username, email, full_name)
-        VALUES (#{username}, #{email}, #{fullName})
+        INSERT INTO app_user (username, email, full_name, password_hash)
+        VALUES (#{username}, #{email}, #{fullName}, #{passwordHash})
     </insert>
 
     <select id="findById" resultMap="UserResult">
@@ -56,10 +56,11 @@
 
     <update id="update" parameterType="User">
         UPDATE app_user
-        SET username   = #{username},
-            email      = #{email},
-            full_name  = #{fullName},
-            updated_at = now()
+        SET username      = #{username},
+            email         = #{email},
+            full_name     = #{fullName},
+            password_hash = #{passwordHash},
+            updated_at    = now()
         WHERE id = #{id}
     </update>
 

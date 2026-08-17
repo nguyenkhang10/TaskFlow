@@ -1,7 +1,6 @@
 spring:
   application:
     name: taskflow
-
   # --- Kết nối PostgreSQL ---
   # Có thể override bằng biến môi trường khi chạy Docker/CI.
   datasource:
@@ -11,12 +10,10 @@ spring:
     Hikari:
       pool-name: project-pool
       maximum-pool-size: 10          # HikariCP: giới hạn số connection
-
   # --- Flyway: chạy migration trong resources/db/migration lúc khởi động ---
   flyway:
     enabled: true
     baseline-on-migrate: true
-
 # --- MyBatis ---
 mybatis:
   # Cho phép "Project" thay vì FQN trong resultType/parameterType
@@ -29,7 +26,6 @@ mybatis:
 
 server:
   port: 8080
-
 # --- Logging: in ra câu SQL MyBatis thực thi — rất hữu ích khi dạy/debug ---
 logging:
   level:

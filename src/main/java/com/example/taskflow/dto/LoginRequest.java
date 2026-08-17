@@ -2,10 +2,6 @@ package com.example.taskflow.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-/**
- * LoginRequest — dữ liệu client gửi lên khi đăng nhập.
- * @NotBlank đảm bảo không được để trống (Spring Validation).
- */
 public class LoginRequest {
 
     @NotBlank(message = "Username không được để trống")

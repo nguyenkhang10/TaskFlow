@@ -32,6 +32,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(body);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiError> handleIllegalArgument(IllegalArgumentException ex,
+                                                           HttpServletRequest req) {
+        ApiError body = ApiError.of(401, "Unauthorized", ex.getMessage(), req.getRequestURI());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+    }
+
     /** 500 — lỗi ngoài dự kiến (lưới an toàn cuối cùng). */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneric(Exception ex, HttpServletRequest req) {

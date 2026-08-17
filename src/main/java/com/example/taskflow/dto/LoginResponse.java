@@ -1,9 +1,6 @@
 package com.example.taskflow.dto;
 
-/**
- * LoginResponse — trả về client sau khi đăng nhập thành công.
- * Chỉ chứa token (không trả password hay thông tin nhạy cảm).
- */
+
 public class LoginResponse {
 
     private String token;

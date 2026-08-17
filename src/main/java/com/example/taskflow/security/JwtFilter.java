@@ -14,7 +14,6 @@ import java.util.List;
 
 /**
  * JwtFilter — chạy MỖI request, kiểm tra JWT trong header.
- *
  * Flow:
  *  1. Đọc header "Authorization: Bearer <token>"
  *  2. Xác thực token bằng JwtUtil
@@ -37,25 +36,17 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Bước 1: Đọc header Authorization
         String authHeader = request.getHeader("Authorization");
 
-        // Bước 2: Kiểm tra có đúng định dạng "Bearer <token>" không
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) { //startWith"Bearer "
 
-            // Cắt bỏ "Bearer " (7 ký tự) để lấy token thực sự
-            String token = authHeader.substring(7);
+            String token = authHeader.substring(7); //cắt 7 kí tự
 
-            // Bước 3: Xác thực token
-            if (jwtUtil.isTokenValid(token)) {
-                String username = jwtUtil.extractUsername(token);
+            if (jwtUtil.isTokenValid(token)) { //xác thực
+                String username = jwtUtil.extractUsername(token); //trích username
 
-                // Bước 4: Tạo Authentication object và đặt vào SecurityContext
-                // - principal   : username (ai đang đăng nhập)
-                // - credentials : null (không cần password nữa, đã có token)
-                // - authorities  : List.of() (chưa có role, sẽ thêm sau)
                 var authentication = new UsernamePasswordAuthenticationToken(
-                        username, null, List.of()
+                        username, null, List.of() //tạo token mới
                 );
 
                 // SecurityContextHolder = "bộ nhớ" lưu thông tin user trong request hiện tại

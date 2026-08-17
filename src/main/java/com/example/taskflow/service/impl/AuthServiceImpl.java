@@ -25,20 +25,6 @@ public class AuthServiceImpl implements AuthService {
         this.jwtUtil = jwtUtil;
     }
 
-    @Override
-    @Transactional(readOnly = true)
-
-    public LoginResponse login(LoginRequest request) {
-        User user = userMapper.findByUsername(request.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            throw new IllegalArgumentException("Invalid username or password");
-        }
-
-        String token = jwtUtil.generateToken(user.getUsername());
-        return new LoginResponse(token);
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -46,5 +32,32 @@ public class AuthServiceImpl implements AuthService {
         User user = userMapper.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
         return UserResponse.from(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public LoginResponse login(LoginRequest request) {
+        User user = userMapper.findByUsername(request.getUsername()) //findByUsername
+                .orElseThrow(() -> {
+                    System.out.println("User KHÔNG TÌM ĐƯỢC");
+                    return new IllegalArgumentException("Invalid username or password");
+                });
+        System.out.println("Username nhận được = " + request.getUsername());
+        System.out.println("Password nhận được = " + request.getPassword());
+        System.out.println("User tìm được = " + user.getUsername());
+        System.out.println("Email = " + user.getEmail());
+        System.out.println("Hash từ DB = " + user.getPasswordHash());
+
+        boolean matches = passwordEncoder.matches(request.getPassword(), user.getPasswordHash());
+        System.out.println("Password match result = " + matches);
+
+        if (!matches) {
+            System.out.println("Invalid password");
+            throw new IllegalArgumentException("Invalid username or password");
+        }
+        System.out.println("Password KHỚP");
+
+        String token = jwtUtil.generateToken(user.getUsername());
+        return new LoginResponse(token);
     }
 }

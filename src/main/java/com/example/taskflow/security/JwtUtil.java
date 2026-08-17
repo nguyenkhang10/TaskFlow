@@ -38,42 +38,30 @@ public class JwtUtil {
         this.expirationMs = expirationMs;
     }
 
-    /**
-     * Tạo JWT token từ username.
-     * Token sẽ hết hạn sau `expirationMs` mili-giây.
-     */
     public String generateToken(String username) {
         Date now    = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
 
         return Jwts.builder()
-                .subject(username)          // Payload: "sub" = username
-                .issuedAt(now)              // Payload: "iat" = thời điểm tạo
-                .expiration(expiry)         // Payload: "exp" = thời điểm hết hạn
-                .signWith(secretKey)        // Ký bằng secret key → tạo Signature
-                .compact();                 // Ghép Header.Payload.Signature → chuỗi JWT
-    }
+                .subject(username)
+                .issuedAt(now)
+                .expiration(expiry)
+                .signWith(secretKey)
+                .compact();
+    }   //tạo token
 
-    /**
-     * Đọc username từ JWT token.
-     * Nếu token không hợp lệ → ném JwtException.
-     */
     public String extractUsername(String token) {
         return parseClaims(token).getSubject();
     }
 
-    /**
-     * Kiểm tra token có hợp lệ không.
-     * Trả về false nếu: chữ ký sai, token hết hạn, hoặc bị giả mạo.
-     */
     public boolean isTokenValid(String token) {
         try {
-            parseClaims(token); // Nếu không ném exception → hợp lệ
+            parseClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            return false;       // Token hỏng, hết hạn, hoặc chữ ký sai
+            return false;
         }
-    }
+    }   //kiểm tra token hợp lệ không
 
     // --- Private helper ---
 
