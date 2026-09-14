@@ -9,8 +9,11 @@ public class User {
     private String fullName;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
-    private String passwordHash;   // BCrypt hash, KHÔNG bao giờ trả về client
-
+    private String passwordHash; // BCrypt hash, KHÔNG bao giờ trả về client
+    private UserRole role;
+    private UserStatus status;
+    private OffsetDateTime deletedAt;
+    private boolean deleted;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -33,5 +36,15 @@ public class User {
     public String getPasswordHash() { return passwordHash; }
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 
+    public UserRole getRole() { return role; }
+    public void setRole(UserRole role) { this.role = role; }
 
+    public UserStatus getStatus() { return status; }
+    public void setStatus(UserStatus status) { this.status = status; }
+
+    public OffsetDateTime getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(OffsetDateTime deletedAt) { this.deletedAt = deletedAt; }
+
+    public boolean isDeleted() { return deleted; }
+    public void setDeleted(boolean deleted) { this.deleted = deleted; }
 }

@@ -1,8 +1,12 @@
 package com.example.taskflow.service.impl;
 
 import com.example.taskflow.domain.User;
+import com.example.taskflow.domain.UserRole;
+import com.example.taskflow.domain.UserStatus;
 import com.example.taskflow.dto.LoginRequest;
 import com.example.taskflow.dto.LoginResponse;
+import com.example.taskflow.dto.SignUpRequest;
+import com.example.taskflow.dto.SignUpResponse;
 import com.example.taskflow.dto.UserResponse;
 import com.example.taskflow.exception.ResourceNotFoundException;
 import com.example.taskflow.mapper.UserMapper;
@@ -11,6 +15,8 @@ import com.example.taskflow.service.AuthService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.OffsetDateTime;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -25,7 +31,6 @@ public class AuthServiceImpl implements AuthService {
         this.jwtUtil = jwtUtil;
     }
 
-
     @Override
     @Transactional(readOnly = true)
     public UserResponse me(String username) {
@@ -37,27 +42,38 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional(readOnly = true)
     public LoginResponse login(LoginRequest request) {
-        User user = userMapper.findByUsername(request.getUsername()) //findByUsername
-                .orElseThrow(() -> {
-                    System.out.println("User KHÔNG TÌM ĐƯỢC");
-                    return new IllegalArgumentException("Invalid username or password");
-                });
-        System.out.println("Username nhận được = " + request.getUsername());
-        System.out.println("Password nhận được = " + request.getPassword());
-        System.out.println("User tìm được = " + user.getUsername());
-        System.out.println("Email = " + user.getEmail());
-        System.out.println("Hash từ DB = " + user.getPasswordHash());
+        User user = userMapper.findByUsername(request.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
 
-        boolean matches = passwordEncoder.matches(request.getPassword(), user.getPasswordHash());
-        System.out.println("Password match result = " + matches);
-
-        if (!matches) {
-            System.out.println("Invalid password");
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
             throw new IllegalArgumentException("Invalid username or password");
         }
-        System.out.println("Password KHỚP");
 
-        String token = jwtUtil.generateToken(user.getUsername());
+        String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
         return new LoginResponse(token);
+    }
+
+    @Override
+    @Transactional
+    public SignUpResponse register(SignUpRequest request) {
+        if (userMapper.findByUsername(request.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+        if (userMapper.findByEmail(request.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setFullName(request.getFullName());
+        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        user.setRole(UserRole.MEMBER);
+        user.setStatus(UserStatus.ACTIVE);
+        user.setCreatedAt(OffsetDateTime.now());
+        user.setUpdatedAt(OffsetDateTime.now());
+
+        userMapper.insert(user);
+        return new SignUpResponse(user.getId(), user.getUsername(), user.getEmail());
     }
 }

@@ -1,5 +1,6 @@
 package com.example.taskflow.security;
 
+import com.example.taskflow.domain.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -13,45 +14,52 @@ import java.util.Date;
 
 /**
  * JwtUtil — chịu trách nhiệm TẠO và XÁC THỰC JWT token.
- *
- * Cách JWT hoạt động:
- *   Header.Payload.Signature
- *   - Header   : thuật toán (HS256)
- *   - Payload  : data (username, expiration)
- *   - Signature: HMAC(header + payload, secretKey) → không ai giả mạo được
  */
 @Component
 public class JwtUtil {
 
-    // Secret key đọc từ application.yml — phải đủ dài (>= 32 ký tự)
     private final SecretKey secretKey;
-
-    // Thời gian sống của token (mili-giây), đọc từ application.yml
     private final long expirationMs;
 
-    // Spring tự inject giá trị từ application.yml qua @Value
     public JwtUtil(
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.expiration-ms}") long expirationMs) {
-        // Keys.hmacShaKeyFor() tạo SecretKey từ chuỗi bytes
         this.secretKey   = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expirationMs = expirationMs;
     }
 
-    public String generateToken(String username) {
+    public String generateToken(String username, UserRole role) {
         Date now    = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
 
         return Jwts.builder()
                 .subject(username)
+                .claim("role", role != null ? role.name() : UserRole.MEMBER.name())
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(secretKey)
                 .compact();
-    }   //tạo token
+    }
+
+    public String generateToken(String username) {
+        return generateToken(username, UserRole.MEMBER);
+    }
 
     public String extractUsername(String token) {
         return parseClaims(token).getSubject();
+    }
+
+    public UserRole extractRole(String token) {
+        Claims claims = parseClaims(token);
+        String roleStr = claims.get("role", String.class);
+        if (roleStr != null) {
+            try {
+                return UserRole.valueOf(roleStr);
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+        return null;
     }
 
     public boolean isTokenValid(String token) {
@@ -61,17 +69,11 @@ public class JwtUtil {
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
-    }   //kiểm tra token hợp lệ không
+    }
 
-    // --- Private helper ---
-
-    /**
-     * Parse token → Claims (toàn bộ payload).
-     * JJWT tự kiểm tra: chữ ký + thời hạn — nếu sai → ném exception ngay.
-     */
     private Claims parseClaims(String token) {
         return Jwts.parser()
-                .verifyWith(secretKey)  // Dùng secret key để xác thực chữ ký
+                .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();

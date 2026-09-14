@@ -1,5 +1,6 @@
 package com.example.taskflow.controller;
 
+import com.example.taskflow.domain.UserRole;
 import com.example.taskflow.dto.UserRequest;
 import com.example.taskflow.dto.UserResponse;
 import com.example.taskflow.service.UserService;
@@ -33,8 +34,9 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserResponse> search(@RequestParam(value = "keyword", required = false) String keyword) {
-        return userService.search(keyword);
+    public List<UserResponse> search(@RequestParam(value = "keyword", required = false) String keyword,
+                                     @RequestParam(value = "role", required = false) UserRole role) {
+        return userService.search(keyword, role);
     }
 
     @GetMapping("/{id}")

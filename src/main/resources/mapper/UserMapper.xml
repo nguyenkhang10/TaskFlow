@@ -9,46 +9,73 @@
         <result property="username"     column="username"/>
         <result property="email"        column="email"/>
         <result property="fullName"     column="full_name"/>
-        <result property="passwordHash" column="password_hash"/>  <!-- BCrypt hash -->
+        <result property="passwordHash" column="password_hash"/>
+        <result property="role"         column="role"/>
+        <result property="status"       column="status"/>
         <result property="createdAt"    column="created_at"/>
         <result property="updatedAt"    column="updated_at"/>
+        <result property="deletedAt"    column="deleted_at"/>
     </resultMap>
 
     <sql id="columns">
-        id, username, email, full_name, password_hash, created_at, updated_at
+        id, username, email, full_name, password_hash, role, status, created_at, updated_at, deleted_at
     </sql>
 
     <insert id="insert" parameterType="User" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO app_user (username, email, full_name, password_hash)
-        VALUES (#{username}, #{email}, #{fullName}, #{passwordHash})
+        INSERT INTO app_user (username, email, full_name, password_hash, role, status)
+        VALUES (#{username}, #{email}, #{fullName}, #{passwordHash}, #{role}, #{status})
     </insert>
 
     <select id="findById" resultMap="UserResult">
         SELECT <include refid="columns"/>
         FROM app_user
-        WHERE id = #{id}
+        WHERE id = #{id} AND deleted_at IS NULL
     </select>
 
     <select id="findByUsername" resultMap="UserResult">
         SELECT <include refid="columns"/>
         FROM app_user
-        WHERE username = #{username}
+        WHERE username = #{username} AND deleted_at IS NULL
     </select>
 
     <select id="findByEmail" resultMap="UserResult">
         SELECT <include refid="columns"/>
         FROM app_user
-        WHERE email = #{email}
+        WHERE email = #{email} AND deleted_at IS NULL
     </select>
 
     <select id="search" resultMap="UserResult">
         SELECT <include refid="columns"/>
         FROM app_user
         <where>
+            deleted_at IS NULL
             <if test="keyword != null and keyword != ''">
                 AND (username ILIKE '%' || #{keyword} || '%'
                 OR email ILIKE '%' || #{keyword} || '%'
                 OR full_name ILIKE '%' || #{keyword} || '%')
+            </if>
+            <if test="role != null">
+                AND role = #{role}
+            </if>
+        </where>
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="searchAdmin" resultMap="UserResult">
+        SELECT <include refid="columns"/>
+        FROM app_user
+        <where>
+            <if test="username != null and username != ''">
+                AND username ILIKE '%' || #{username} || '%'
+            </if>
+            <if test="email != null and email != ''">
+                AND email ILIKE '%' || #{email} || '%'
+            </if>
+            <if test="role != null">
+                AND role = #{role}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
             </if>
         </where>
         ORDER BY created_at DESC
@@ -60,7 +87,24 @@
             email         = #{email},
             full_name     = #{fullName},
             password_hash = #{passwordHash},
+            role          = #{role},
+            status        = #{status},
             updated_at    = now()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updatePassword">
+        UPDATE app_user
+        SET password_hash = #{password},
+            updated_at    = now()
+        WHERE id = #{id}
+    </update>
+
+    <update id="softDeleteById">
+        UPDATE app_user
+        SET status     = 'INACTIVE',
+            deleted_at = now(),
+            updated_at = now()
         WHERE id = #{id}
     </update>
 
