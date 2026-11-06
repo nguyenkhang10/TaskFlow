@@ -4,7 +4,7 @@ spring:
   # --- Kết nối PostgreSQL ---
   # Có thể override bằng biến môi trường khi chạy Docker/CI.
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/admin}
+    url: ${SPRING_DATASOURCE_URL}
     username: ${DB_USERNAME:admin}
     password: ${DB_PASSWORD:admin}
     Hikari:
