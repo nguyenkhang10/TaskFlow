@@ -75,9 +75,43 @@ public class TaskController {
             @RequestParam(required = false) Long projectId,
             @RequestParam(required = false) Long creatorId,
             @RequestParam(required = false) Long handlerId,
+            @RequestParam(required = false) String assignee,
+            @RequestParam(required = false) String assigner,
             @RequestParam(required = false) String keyword) {
 
-        return taskService.search(status, priority, projectId, creatorId, handlerId, keyword);
+        Long effectiveCreatorId = creatorId;
+        if (effectiveCreatorId == null && assigner != null) {
+            try {
+                effectiveCreatorId = Long.parseLong(assigner);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        Long effectiveHandlerId = handlerId;
+        if (effectiveHandlerId == null && assignee != null) {
+            try {
+                effectiveHandlerId = Long.parseLong(assignee);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        return taskService.search(status, priority, projectId, effectiveCreatorId, effectiveHandlerId, keyword);
+    }
+
+    /**
+     * GET /api/projects/{projectId}/tasks — Lấy danh sách task theo project.
+     */
+    @GetMapping("/projects/{projectId}/tasks")
+    public List<TaskResponse> getByProjectId(@PathVariable Long projectId) {
+        return taskService.getByProjectId(projectId);
+    }
+
+    /**
+     * GET /api/project/{projectId}/tasks — Alternate path (singular).
+     */
+    @GetMapping("/project/{projectId}/tasks")
+    public List<TaskResponse> getByProjectIdAlt(@PathVariable Long projectId) {
+        return taskService.getByProjectId(projectId);
     }
 
     /** GET /api/tasks/{id} — Lấy chi tiết 1 task. Trả về 404 nếu không tìm thấy. */
@@ -86,8 +120,8 @@ public class TaskController {
         return taskService.getById(id);
     }
 
-    /** PUT /api/tasks/{id} — Cập nhật 1 task theo id. Trả về 404 nếu task không tồn tại. */
-    @PutMapping("/tasks/{id}")
+    /** PUT /api/tasks/{id} or PATCH /api/tasks/{id} — Cập nhật 1 task theo id. Trả về 404 nếu task không tồn tại. */
+    @RequestMapping(value = "/tasks/{id}", method = {RequestMethod.PUT, RequestMethod.PATCH})
     public TaskResponse update(@PathVariable Long id,
                                @Valid @RequestBody TaskRequest request) {
         return taskService.update(id, request);

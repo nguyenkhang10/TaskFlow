@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/users")
-class AdminUserController {
+public class AdminUserController {
 
     private final UserService userService;
 
@@ -58,12 +58,12 @@ class AdminUserController {
     }
 
     /**
-     * PUT /api/admin/users/{id} — Update user account.
+     * PUT /api/admin/users/{id} or PATCH /api/admin/users/{id} — Update user account.
      */
-    @PutMapping("/{id}")
+    @RequestMapping(value = "/{id}", method = {RequestMethod.PUT, RequestMethod.PATCH})
     public UserResponse update(@PathVariable Long id,
-                               @Valid @RequestBody UserRequest request) {
-        return userService.update(id, request);
+                               @RequestBody UserRequest request) {
+        return userService.updateAdmin(id, request);
     }
 
     /**

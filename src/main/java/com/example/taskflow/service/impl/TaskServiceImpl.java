@@ -54,6 +54,15 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<TaskResponse> getByProjectId(Long projectId) {
+        return taskMapper.search(null, null, projectId, null, null, null)
+                .stream()
+                .map(TaskResponse::from)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<TaskResponse> search(TaskStatus status, TaskPriority priority, Long projectId, Long creatorId, Long handlerId, String keyword) {
         return taskMapper.search(status, priority, projectId, creatorId, handlerId, keyword)
                 .stream()

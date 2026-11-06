@@ -3,6 +3,7 @@ package com.example.taskflow.service.impl;
 import com.example.taskflow.domain.User;
 import com.example.taskflow.domain.UserRole;
 import com.example.taskflow.domain.UserStatus;
+import com.example.taskflow.dto.CheckPasswordRequest;
 import com.example.taskflow.dto.LoginRequest;
 import com.example.taskflow.dto.LoginResponse;
 import com.example.taskflow.dto.SignUpRequest;
@@ -75,5 +76,42 @@ public class AuthServiceImpl implements AuthService {
 
         userMapper.insert(user);
         return new SignUpResponse(user.getId(), user.getUsername(), user.getEmail());
+    }
+
+    @Override
+    @Transactional
+    public LoginResponse signup(SignUpRequest request) {
+        if (userMapper.findByUsername(request.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+        if (userMapper.findByEmail(request.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setFullName(request.getFullName());
+        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        user.setRole(UserRole.MEMBER);
+        user.setStatus(UserStatus.ACTIVE);
+        user.setCreatedAt(OffsetDateTime.now());
+        user.setUpdatedAt(OffsetDateTime.now());
+
+        userMapper.insert(user);
+
+        String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
+        return new LoginResponse(token);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void checkPassword(String username, CheckPasswordRequest request) {
+        User user = userMapper.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            throw new IllegalArgumentException("Invalid password");
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.taskflow.controller;
 
+import com.example.taskflow.dto.CheckPasswordRequest;
 import com.example.taskflow.dto.LoginRequest;
 import com.example.taskflow.dto.LoginResponse;
 import com.example.taskflow.dto.SignUpRequest;
@@ -7,6 +8,8 @@ import com.example.taskflow.dto.SignUpResponse;
 import com.example.taskflow.dto.UserResponse;
 import com.example.taskflow.service.AuthService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,19 +23,52 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/login")
-    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
-        return authService.login(request);
+    /**
+     * POST /api/auth/signup — Public endpoint.
+     * Registers a new user account with encrypted password and returns a JWT access token for instant login.
+     */
+    @PostMapping("/signup")
+    public ResponseEntity<LoginResponse> signup(@Valid @RequestBody SignUpRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.signup(request));
     }
 
+    /**
+     * POST /api/auth/login — Public endpoint.
+     * Receives username + password, returns a JWT access token.
+     */
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
+    }
+
+    /**
+     * POST /api/auth/register — Public endpoint (backward compatible).
+     * Registers a new user account and returns user info.
+     */
     @PostMapping("/register")
     public SignUpResponse register(@Valid @RequestBody SignUpRequest request) {
         return authService.register(request);
     }
 
+    /**
+     * GET /api/auth/me — Protected endpoint.
+     * Returns info of the currently authenticated user.
+     */
     @GetMapping("/me")
-    public UserResponse getMe(
-            @AuthenticationPrincipal String username) {
-        return authService.me(username);
+    public ResponseEntity<UserResponse> me(@AuthenticationPrincipal String username) {
+        return ResponseEntity.ok(authService.me(username));
+    }
+
+    /**
+     * POST /api/auth/password — Protected endpoint.
+     * Checks if the provided password matches the authenticated user's current password.
+     * Returns 200 (OK) if correct, throws exception / 400 Bad Request if invalid.
+     */
+    @PostMapping("/password")
+    public ResponseEntity<Void> checkPassword(
+            @AuthenticationPrincipal String username,
+            @Valid @RequestBody CheckPasswordRequest request) {
+        authService.checkPassword(username, request);
+        return ResponseEntity.ok().build();
     }
 }

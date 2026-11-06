@@ -10,6 +10,7 @@ spring:
     Hikari:
       pool-name: project-pool
       maximum-pool-size: 10          # HikariCP: giới hạn số connection
+    driver-class-name: org.postgresql.Driver
   # --- Flyway: chạy migration trong resources/db/migration lúc khởi động ---
   flyway:
     enabled: true
@@ -24,13 +25,6 @@ mybatis:
     # Tự map user_name (DB) -> userName (Java) mà không cần khai báo tay
     map-underscore-to-camel-case: true
 
-server:
-  port: 8080
-# --- Logging: in ra câu SQL MyBatis thực thi — rất hữu ích khi dạy/debug ---
-logging:
-  level:
-    com.example.taskflow.mapper: debug
-
 # --- JWT ---
 jwt:
   # Secret key để ký JWT — PHẢI >= 32 ký tự (256-bit cho HS256)
@@ -38,3 +32,20 @@ jwt:
   secret: ${JWT_SECRET:taskflow-super-secret-key-for-jwt-signing-2024}
   # Token hết hạn sau 24 giờ (mili-giây)
   expiration-ms: 86400000
+
+# --- Logging: in ra câu SQL MyBatis thực thi — rất hữu ích khi dạy/debug ---
+logging:
+  level:
+    com.example.taskflow.mapper: debug
+
+server:
+  port: ${PORT:8080}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true # In câu lệnh SQL ra log (tùy chọn, có thể xóa khi chạy production)
+

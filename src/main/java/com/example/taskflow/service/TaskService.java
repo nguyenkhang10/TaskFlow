@@ -12,6 +12,8 @@ public interface TaskService {
 
     TaskResponse getById(Long id);
 
+    List<TaskResponse> getByProjectId(Long projectId);
+
     List<TaskResponse> search(TaskStatus status, TaskPriority priority, Long projectId, Long creatorId, Long handlerId, String keyword);
 
     TaskResponse update(Long id, TaskRequest request);

@@ -3,10 +3,12 @@ package com.example.taskflow.controller;
 import com.example.taskflow.domain.UserRole;
 import com.example.taskflow.dto.UserRequest;
 import com.example.taskflow.dto.UserResponse;
+import com.example.taskflow.dto.UserUpdateRequest;
 import com.example.taskflow.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -34,9 +36,10 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserResponse> search(@RequestParam(value = "keyword", required = false) String keyword,
-                                     @RequestParam(value = "role", required = false) UserRole role) {
-        return userService.search(keyword, role);
+    public List<UserResponse> search(@RequestParam(value = "projectId", required = false) Long projectId,
+                                     @RequestParam(value = "role", required = false) UserRole role,
+                                     @RequestParam(value = "keyword", required = false) String keyword) {
+        return userService.search(projectId, role, keyword);
     }
 
     @GetMapping("/{id}")
@@ -44,10 +47,11 @@ public class UserController {
         return userService.getById(id);
     }
 
-    @PutMapping("/{id}")
+    @RequestMapping(value = "/{id}", method = {RequestMethod.PUT, RequestMethod.PATCH})
     public UserResponse update(@PathVariable Long id,
-                               @Valid @RequestBody UserRequest request) {
-        return userService.update(id, request);
+                               @AuthenticationPrincipal String currentUsername,
+                               @Valid @RequestBody UserUpdateRequest request) {
+        return userService.update(id, currentUsername, request);
     }
 
     @DeleteMapping("/{id}")
