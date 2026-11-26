@@ -1,11 +1,6 @@
 package com.example.taskflow.service;
 
-import com.example.taskflow.dto.CheckPasswordRequest;
-import com.example.taskflow.dto.LoginRequest;
-import com.example.taskflow.dto.LoginResponse;
-import com.example.taskflow.dto.SignUpRequest;
-import com.example.taskflow.dto.SignUpResponse;
-import com.example.taskflow.dto.UserResponse;
+import com.example.taskflow.dto.*;
 
 public interface AuthService {
     LoginResponse login(LoginRequest request);
@@ -17,4 +12,8 @@ public interface AuthService {
     LoginResponse signup(SignUpRequest request);
 
     void checkPassword(String username, CheckPasswordRequest request);
+
+    void forgotPassword(ForgotPasswordRequest request);
+
+    void resetPassword(ResetPasswordWithTokenRequest request);
 }

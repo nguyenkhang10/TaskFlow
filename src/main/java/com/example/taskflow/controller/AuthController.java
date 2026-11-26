@@ -1,17 +1,14 @@
 package com.example.taskflow.controller;
 
-import com.example.taskflow.dto.CheckPasswordRequest;
-import com.example.taskflow.dto.LoginRequest;
-import com.example.taskflow.dto.LoginResponse;
-import com.example.taskflow.dto.SignUpRequest;
-import com.example.taskflow.dto.SignUpResponse;
-import com.example.taskflow.dto.UserResponse;
+import com.example.taskflow.dto.*;
 import com.example.taskflow.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -70,5 +67,20 @@ public class AuthController {
             @Valid @RequestBody CheckPasswordRequest request) {
         authService.checkPassword(username, request);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Map<String, String>> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequest request) {
+        authService.forgotPassword(request);
+        return ResponseEntity.ok(Map.of("message",
+                "Nếu email tồn tại trong hệ thống, chúng tôi đã gửi hướng dẫn đặt lại mật khẩu."));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Map<String, String>> resetPassword(
+            @Valid @RequestBody ResetPasswordWithTokenRequest request) {
+        authService.resetPassword(request);
+        return ResponseEntity.ok(Map.of("message", "Đặt lại mật khẩu thành công"));
     }
 }

@@ -40,3 +40,13 @@ logging:
 
 server:
   port: ${PORT:8080}
+
+app:
+  frontend-url: ${FRONTEND_URL:http://localhost:5173}
+  password-reset:
+    expiration-minutes: 15
+
+mail:
+  brevo-api-key: ${BREVO_API_KEY:}
+  sender-email: ${MAIL_SENDER_EMAIL:}
+  sender-name: TaskFlow

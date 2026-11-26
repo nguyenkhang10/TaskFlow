@@ -31,7 +31,6 @@ public class GlobalExceptionHandler {
         ApiError body = ApiError.validation("Dữ liệu không hợp lệ", req.getRequestURI(), fieldErrors);
         return ResponseEntity.badRequest().body(body);
     }
-
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiError> handleIllegalArgument(IllegalArgumentException ex,
                                                            HttpServletRequest req) {
@@ -45,5 +44,13 @@ public class GlobalExceptionHandler {
         ApiError body = ApiError.of(500, "Internal Server Error",
                 "Đã có lỗi xảy ra phía server", req.getRequestURI());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    }
+
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ApiError> handleInvalidToken(InvalidTokenException ex,
+                                                       HttpServletRequest req) {
+        ApiError body = ApiError.of(400, "Bad Request", ex.getMessage(), req.getRequestURI());
+        return ResponseEntity.badRequest().body(body);
     }
 }
